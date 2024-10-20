@@ -20,9 +20,8 @@ class ListenMIDI:
     def save_midi_data(self, remaining = False):
         try:
             if self.all_midi_data:
-                with open('midi_data.json', 'w') as json_file:
-                    deserialized = json.loads(self.all_midi_data[0]) # Deserialize JSON bytearray into Python object
-                    # json.dump(deserialized, json_file, indent=4)
+                deserialized = self.all_midi_data[0] # Deserialize JSON bytearray into Python object
+                # json.dump(deserialized, json_file, indent=4)
                 if remaining:
                     print("Remaining data saved successfully.")
                 else:
@@ -51,7 +50,7 @@ class ListenMIDI:
                         try:
                             midi_data = json.loads(complete_data)
                             self.all_midi_data.append(midi_data)
-                            print("Appended data, length:", len(self.all_midi_data[0]))
+                            print("Appended data, length:", len(self.all_midi_data))
                             self.buffer = ""  # Clear the buffer after successful parsing
                             print("Cleared buffer")
         
@@ -72,3 +71,6 @@ class ListenMIDI:
             print("\nInterrupted, saving remaining MIDI data...")
             self.save_midi_data(remaining=False)
             sys.exit()
+        
+        finally:
+            self.socket.close()
