@@ -21,16 +21,20 @@ class ListenMIDI:
         try:
             if self.all_midi_data:
                 with open('midi_data.json', 'w') as json_file:
-                    json.dump(json.loads(self.all_midi_data[0]), json_file, indent=4)
+                    deserialized = json.loads(self.all_midi_data[0]) # Deserialize JSON bytearray into Python object
+                    # json.dump(deserialized, json_file, indent=4)
                 if remaining:
                     print("Remaining data saved successfully.")
                 else:
                     print("MIDI data saved successfully.")
+                
+                # return deserialized midi JSON data as object
+                return deserialized
         except Exception as e:
             print(f"Failed to save MIDI data: {e}")
             traceback.print_exc()
 
-    def listen_and_write(self):
+    def listen_and_parse(self):
         try:
             while True:
                 data, addr = self.socket.recvfrom(4096) # buffer size 4096
@@ -52,8 +56,8 @@ class ListenMIDI:
                             print("Cleared buffer")
         
                             # Save accumulated MIDI data and exit
-                            self.save_midi_data()
-                            print("Wrote to midi_data.json!")
+                            # print("Wrote to midi_data.json!")
+                            return self.save_midi_data()
 
                         except json.JSONDecodeError as e:
                             print(f"Failed to decode JSON: {e}")
@@ -68,21 +72,3 @@ class ListenMIDI:
             print("\nInterrupted, saving remaining MIDI data...")
             self.save_midi_data(remaining=False)
             sys.exit()
-
-        #     try:
-        #         # Attempt to save any remaining valid JSON data in the buffer
-        #         if "ENDOF" in self.buffer:
-        #             complete_data = self.buffer.replace("ENDOF", "").strip()
-        #             try:
-        #                 self.all_midi_data.append(complete_data)
-        #             except json.JSONDecodeError:
-        #                 pass  # Ignore if it still fails
-        # 
-        #         # Save all the accumulated MIDI data
-        #         with open('midi_data.json', 'w') as json_file:
-        #             json.dump(json.loads(self.all_midi_data[0]), json_file, indent=4)
-        #         print("Remaining data saved successfully.")
-        # 
-        #     except Exception as e:
-        #         print(f"Failed to save remaining MIDI data: {e}")
-        #         traceback.print_exc()
