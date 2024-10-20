@@ -38,6 +38,7 @@
 function getMIDINotes() {
   // Create LiveAPI object to get notes from track 0, arrangement clip 0
   var api = new LiveAPI(null, "live_set tracks 0 arrangement_clips 0");
+  // var api = new LiveAPI(null, "live_set view highlighted_clip_slot");
   if (!api) {
     post("no api object!\n");
     return;
@@ -62,7 +63,7 @@ function getMIDINotes() {
 
   // Construct the combined data object
   var combinedData = {
-    tempo: tempo,
+    tempo: tempo[0],
     notes: notes,
   };
 
@@ -77,7 +78,6 @@ function getMIDINotes() {
     outlet(0, bytes);
   }
 
-  // Send an end marker to indicate all chunks are sent
   outlet(0, stringToBytes("ENDOF"));
 }
 
